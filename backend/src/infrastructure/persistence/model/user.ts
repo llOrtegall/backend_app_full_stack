@@ -34,5 +34,6 @@ UserModel.init(
   },
   {
     sequelize: pgConn,
+    tableName: "users",
   },
 );
