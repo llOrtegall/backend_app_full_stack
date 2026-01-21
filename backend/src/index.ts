@@ -1,8 +1,9 @@
 import express from "express";
 import cors from "cors";
 
-import { userRouter } from "./presentation/router/user";
-import { pgConn } from "./infrastructure/persistence/connection/pg";
+import { pgConn } from "./infrastructure/persistence/connection/pg.ts";
+import { productRouter } from "./presentation/router/product.ts";
+import { userRouter } from "./presentation/router/user.ts";
 
 const PORT = process.env.PORT || 3000;
 const app = express();
@@ -16,6 +17,7 @@ app.get("/health", (_req, res) => {
 });
 
 app.use("/user", userRouter);
+app.use("/product", productRouter);
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
