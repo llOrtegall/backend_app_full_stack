@@ -13,35 +13,20 @@ export class ProductController {
 
   public createProductCtrl = async (req: Request, res: Response) => {
     try {
-      const {
-        name,
-        price,
-        description,
-        category,
-        minStock,
-        quantity,
-        sku,
-        barcode,
-        cost,
-        image,
-        maxStock,
-        notes,
-      } = validateProductDto(req.body);
+      const productData = validateProductDto(req.body);
 
-      const newProduct = await this.productUseCase.createNewProduct({
-        name,
-        price,
-        description,
-        category,
-        minStock,
-        quantity,
-        sku,
-        barcode,
-        cost,
-        image,
-        maxStock,
-        notes,
-      });
+      const imageFile = req.file
+        ? {
+            buffer: req.file.buffer,
+            originalName: req.file.originalname,
+            mimeType: req.file.mimetype,
+          }
+        : undefined;
+
+      const newProduct = await this.productUseCase.createNewProduct(
+        productData,
+        imageFile,
+      );
 
       return res.status(201).json({
         id: newProduct.id,
