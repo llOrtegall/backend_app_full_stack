@@ -1,46 +1,73 @@
-import { ProductEntity } from "../../../domain/product/entity";
-import type { IProductRepository } from "../../../domain/product/repository";
-import { ProductModel } from "../../persistence/model/product";
+import type { ProductEntity } from "../../../domain/product/entity.ts";
+import type { IProductRepository } from "../../../domain/product/repository.ts";
+import { ProductModel } from "../../persistence/model/product.ts";
+import { reconstituteProduct } from "../../../domain/product/factory.ts";
 
 export class ProductPgRepo implements IProductRepository {
-  async create(product: ProductEntity): Promise<ProductEntity | null> {
+  async create(product: ProductEntity): Promise<ProductEntity> {
     try {
-      await ProductModel.sync();
-
-      const newProduct = new ProductEntity(product);
-
       const createdProduct = await ProductModel.create({
-        id: newProduct.id,
-        name: newProduct.name,
-        description: newProduct.description,
-        cost: newProduct.cost,
-        price: newProduct.price,
-        sku: newProduct.sku,
-        barcode: newProduct.barcode,
-        quantity: newProduct.quantity,
-        minStock: newProduct.minStock,
-        maxStock: newProduct.maxStock,
-        category: newProduct.category,
-        image: newProduct.image,
-        notes: newProduct.notes,
+        id: product.id,
+        name: product.name,
+        description: product.description,
+        cost: product.cost,
+        price: product.price,
+        sku: product.sku,
+        barcode: product.barcode,
+        quantity: product.quantity,
+        minStock: product.minStock,
+        maxStock: product.maxStock,
+        category: product.category,
+        image: product.image,
+        notes: product.notes,
+        createdAt: product.createdAt,
+        updatedAt: product.updatedAt,
       });
 
-      return createdProduct.toJSON() as ProductEntity;
+      return reconstituteProduct(createdProduct.toJSON());
     } catch (error) {
-      console.error("Error creating product:", error);
-      return null;
+      throw new Error(`Failed to create product: ${error}`);
     }
   }
-  findById(id: string): Promise<ProductEntity | null> {
+
+  async findById(id: string): Promise<ProductEntity | null> {
+    try {
+      const productRecord = await ProductModel.findOne({ where: { id } });
+      if (productRecord) {
+        return reconstituteProduct(productRecord.toJSON());
+      }
+      return null;
+    } catch (error) {
+      throw new Error(`Failed to find product by id: ${error}`);
+    }
+  }
+
+  async findBySku(sku: string): Promise<ProductEntity | null> {
+    try {
+      const productRecord = await ProductModel.findOne({ where: { sku } });
+      if (productRecord) {
+        return reconstituteProduct(productRecord.toJSON());
+      }
+      return null;
+    } catch (error) {
+      throw new Error(`Failed to find product by SKU: ${error}`);
+    }
+  }
+
+  async findAll(): Promise<ProductEntity[]> {
+    try {
+      const products = await ProductModel.findAll();
+      return products.map((p) => reconstituteProduct(p.toJSON()));
+    } catch (error) {
+      throw new Error(`Failed to find all products: ${error}`);
+    }
+  }
+
+  async update(_product: ProductEntity): Promise<void> {
     throw new Error("Method not implemented.");
   }
-  findAll(): Promise<ProductEntity[]> {
-    throw new Error("Method not implemented.");
-  }
-  update(product: ProductEntity): Promise<void> {
-    throw new Error("Method not implemented.");
-  }
-  delete(id: string): Promise<void> {
+
+  async delete(_id: string): Promise<void> {
     throw new Error("Method not implemented.");
   }
 }

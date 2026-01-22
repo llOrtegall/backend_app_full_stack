@@ -1,5 +1,7 @@
-import { ProductEntity, type IProduct } from "../../domain/product/entity.ts";
+import type { IProduct } from "../../domain/product/entity.ts";
 import type { IProductRepository } from "../../domain/product/repository.ts";
+import { createProduct } from "../../domain/product/factory.ts";
+import { ProductAlreadyExistsError } from "../../domain/product/errors.ts";
 
 export class ProductUseCases {
   constructor(private productRepo: IProductRepository) {}
@@ -7,10 +9,16 @@ export class ProductUseCases {
   createNewProduct = async (
     props: Omit<IProduct, "id" | "createdAt" | "updatedAt">,
   ): Promise<IProduct> => {
-    const newProduct = new ProductEntity(props);
+    // Validar que el SKU no exista
+    const existingProduct = await this.productRepo.findBySku(props.sku);
+    if (existingProduct) {
+      throw new ProductAlreadyExistsError(props.sku);
+    }
 
-    await this.productRepo.create(newProduct);
+    // Crear producto con validaciones de dominio
+    const newProduct = createProduct(props);
 
-    return newProduct;
+    // Persistir y retornar el producto creado
+    return await this.productRepo.create(newProduct);
   };
 }
