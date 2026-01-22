@@ -1,24 +1,28 @@
 import type { IProduct } from "../../domain/product/entity.ts";
 import type { IProductRepository } from "../../domain/product/repository.ts";
 import { createProduct } from "../../domain/product/factory.ts";
-import { ProductAlreadyExistsError } from "../../domain/product/errors.ts";
+import type { FileStorageService } from "../service/fileStorage.ts";
 
 export class ProductUseCases {
-  constructor(private productRepo: IProductRepository) {}
+  constructor(
+    private productRepo: IProductRepository,
+    private fileStorage: FileStorageService,
+  ) {}
 
   createNewProduct = async (
     props: Omit<IProduct, "id" | "createdAt" | "updatedAt">,
+    imageFile?: { buffer: Buffer; originalName: string; mimeType: string },
   ): Promise<IProduct> => {
-    // Validar que el SKU no exista
-    const existingProduct = await this.productRepo.findBySku(props.sku);
-    if (existingProduct) {
-      throw new ProductAlreadyExistsError(props.sku);
+    let imageUrl: string | undefined;
+    if (imageFile) {
+      imageUrl = await this.fileStorage.uploadImage(imageFile);
     }
 
-    // Crear producto con validaciones de dominio
-    const newProduct = createProduct(props);
+    const newProduct = createProduct({
+      ...props,
+      image: imageUrl || props.image,
+    });
 
-    // Persistir y retornar el producto creado
     return await this.productRepo.create(newProduct);
   };
 }
