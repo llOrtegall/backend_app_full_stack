@@ -1,16 +1,28 @@
-import { ProductEntity, type IProduct } from "../../domain/product/entity.ts";
+import type { IProduct } from "../../domain/product/entity.ts";
 import type { IProductRepository } from "../../domain/product/repository.ts";
+import { createProduct } from "../../domain/product/factory.ts";
+import type { FileStorageService } from "../service/fileStorage.ts";
 
 export class ProductUseCases {
-  constructor(private productRepo: IProductRepository) {}
+  constructor(
+    private productRepo: IProductRepository,
+    private fileStorage: FileStorageService,
+  ) {}
 
   createNewProduct = async (
     props: Omit<IProduct, "id" | "createdAt" | "updatedAt">,
+    imageFile?: { buffer: Buffer; originalName: string; mimeType: string },
   ): Promise<IProduct> => {
-    const newProduct = new ProductEntity(props);
+    let imageUrl: string | undefined;
+    if (imageFile) {
+      imageUrl = await this.fileStorage.uploadImage(imageFile);
+    }
 
-    await this.productRepo.create(newProduct);
+    const newProduct = createProduct({
+      ...props,
+      image: imageUrl || props.image,
+    });
 
-    return newProduct;
+    return await this.productRepo.create(newProduct);
   };
 }

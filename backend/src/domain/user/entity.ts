@@ -1,5 +1,3 @@
-import { randomUUID } from "node:crypto";
-
 export enum UserRole {
   ADMIN = "admin",
   USER = "user",
@@ -27,14 +25,14 @@ export class UserEntity implements IUser {
   createdAt: Date;
   updatedAt: Date;
 
-  constructor(props: Pick<IUser, "name" | "email" | "password">) {
-    this.id = randomUUID();
+  constructor(props: IUser) {
+    this.id = props.id;
     this.name = props.name;
     this.email = props.email;
     this.password = props.password;
-    this.role = UserRole.USER;
-    this.isActive = true;
-    this.createdAt = new Date();
-    this.updatedAt = new Date();
+    this.role = props.role;
+    this.isActive = props.isActive;
+    this.createdAt = props.createdAt;
+    this.updatedAt = props.updatedAt;
   }
 }

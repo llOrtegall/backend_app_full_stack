@@ -1,10 +1,8 @@
-import { randomUUID } from "node:crypto";
-
 export interface IProduct {
   id: string;
   name: string;
   description: string;
-  sku: string;
+  sku?: string;
   barcode?: string;
   quantity: number;
   minStock: number;
@@ -22,7 +20,7 @@ export class ProductEntity implements IProduct {
   id: string;
   name: string;
   description: string;
-  sku: string;
+  sku?: string | undefined;
   barcode?: string | undefined;
   quantity: number;
   minStock: number;
@@ -35,8 +33,8 @@ export class ProductEntity implements IProduct {
   createdAt: Date;
   updatedAt: Date;
 
-  constructor(props: Omit<IProduct, "id" | "createdAt" | "updatedAt">) {
-    this.id = randomUUID();
+  constructor(props: IProduct) {
+    this.id = props.id;
     this.name = props.name;
     this.description = props.description;
     this.sku = props.sku;
@@ -49,7 +47,7 @@ export class ProductEntity implements IProduct {
     this.category = props.category;
     this.image = props.image;
     this.notes = props.notes;
-    this.createdAt = new Date();
-    this.updatedAt = new Date();
+    this.createdAt = props.createdAt;
+    this.updatedAt = props.updatedAt;
   }
 }

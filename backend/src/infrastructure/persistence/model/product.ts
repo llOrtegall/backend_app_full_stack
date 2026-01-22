@@ -14,7 +14,7 @@ export class ProductModel extends Model<
   declare id: string;
   declare name: string;
   declare description: string;
-  declare sku: string;
+  declare sku: string | undefined;
   declare barcode?: string | undefined;
   declare quantity: number;
   declare minStock: number;
@@ -33,7 +33,7 @@ ProductModel.init(
     id: { type: DataTypes.UUID, primaryKey: true },
     name: { type: DataTypes.STRING, allowNull: false },
     description: { type: DataTypes.TEXT, allowNull: false },
-    sku: { type: DataTypes.STRING, allowNull: false, unique: true },
+    sku: { type: DataTypes.STRING, allowNull: true, unique: true },
     barcode: { type: DataTypes.STRING, allowNull: true, unique: true },
     quantity: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
     minStock: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },

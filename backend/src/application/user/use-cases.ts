@@ -1,6 +1,8 @@
-import { type IUser, UserEntity } from "../../domain/user/entity";
+import type { IUser } from "../../domain/user/entity";
 import type { IUserRepository } from "../../domain/user/repository";
 import type { PasswordEncryptor } from "../service/passwordHash";
+import { createUser } from "../../domain/user/factory";
+import { UserAlreadyExistsError } from "../../domain/user/errors";
 
 export class UserUseCases {
   constructor(
@@ -16,22 +18,20 @@ export class UserUseCases {
     name: string;
     email: string;
     password: string;
-  }): Promise<IUser | null> => {
+  }): Promise<IUser> => {
     const existingUser = await this.userRepo.findByEmail(email);
     if (existingUser) {
-      return null; // User already exists
+      throw new UserAlreadyExistsError(email);
     }
 
     const hashedPassword = await this.passwordHasher.hash(password);
 
-    const newUser = new UserEntity({
+    const newUser = createUser({
       name,
       email,
       password: hashedPassword,
     });
 
-    await this.userRepo.create(newUser);
-
-    return newUser;
+    return await this.userRepo.create(newUser);
   };
 }

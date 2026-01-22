@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { pgRepository } from "../../infrastructure/repositories/pgRepository";
-import { UserUseCases } from "../../application/user/use-cases";
-import { BcryptPasswordEncryptor } from "../../infrastructure/security/bcrypt";
-import { UserController } from "../controller/user";
+import { pgRepository } from "../../infrastructure/repositories/user/UserPgRepo.ts";
+import { UserUseCases } from "../../application/user/use-cases.ts";
+import { BcryptPasswordEncryptor } from "../../infrastructure/security/bcrypt.ts";
+import { UserController } from "../controller/user.ts";
 
 const userRouter = Router();
 
