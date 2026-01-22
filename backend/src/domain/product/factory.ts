@@ -9,7 +9,7 @@ import {
 export function createProduct(props: {
   name: string;
   description: string;
-  sku: string;
+  sku?: string;
   barcode?: string;
   quantity: number;
   minStock: number;
@@ -32,8 +32,12 @@ export function createProduct(props: {
     throw new InvalidProductDataError("Description cannot be empty");
   }
 
-  if (!props.sku || props.sku.trim().length === 0) {
+  if (props.sku !== undefined && props.sku.trim().length === 0) {
     throw new InvalidProductDataError("SKU cannot be empty");
+  }
+
+  if (props.barcode !== undefined && props.barcode.trim().length === 0) {
+    throw new InvalidProductDataError("Barcode cannot be empty");
   }
 
   if (!props.category || props.category.trim().length === 0) {
@@ -74,7 +78,7 @@ export function createProduct(props: {
     id: props.id || randomUUID(),
     name: props.name.trim(),
     description: props.description.trim(),
-    sku: props.sku.trim().toUpperCase(),
+    sku: props.sku?.trim(),
     barcode: props.barcode?.trim(),
     quantity: props.quantity,
     minStock: props.minStock,

@@ -2,7 +2,7 @@ export interface IProduct {
   id: string;
   name: string;
   description: string;
-  sku: string;
+  sku?: string;
   barcode?: string;
   quantity: number;
   minStock: number;
@@ -20,7 +20,7 @@ export class ProductEntity implements IProduct {
   id: string;
   name: string;
   description: string;
-  sku: string;
+  sku?: string | undefined;
   barcode?: string | undefined;
   quantity: number;
   minStock: number;
