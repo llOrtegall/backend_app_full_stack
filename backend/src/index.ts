@@ -18,8 +18,8 @@ app.get("/health", (_req, res) => {
   res.json({ status: "OK", timestamp: new Date().toISOString() });
 });
 
-app.use("/user", userRouter);
-app.use("/product", productRouter);
+app.use("/api/v1/user", userRouter);
+app.use("/api/v1/product", productRouter);
 
 // Initialize database and sync models
 async function initializeDatabase() {

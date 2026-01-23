@@ -25,4 +25,8 @@ export class ProductUseCases {
 
     return await this.productRepo.create(newProduct);
   };
+
+  findAllProducts = async (): Promise<IProduct[]> => {
+    return await this.productRepo.findAll();
+  }
 }

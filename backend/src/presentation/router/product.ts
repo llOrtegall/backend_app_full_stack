@@ -45,4 +45,6 @@ productRouter.post(
   productController.createProductCtrl,
 );
 
+productRouter.get("/", productController.getAllProductsCtrl);
+
 export { productRouter };
