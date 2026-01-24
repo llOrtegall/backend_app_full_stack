@@ -87,4 +87,17 @@ export class ProductController {
       });
     }
   };
+
+  public getAllProductsCtrl = async (req: Request, res: Response) => {
+    try {
+      const products = await this.productUseCase.findAllProducts();
+      return res.status(200).json(products);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      return res.status(500).json({
+        message: "Internal server error",
+        code: "INTERNAL_ERROR",
+      });
+    }
+  };
 }
